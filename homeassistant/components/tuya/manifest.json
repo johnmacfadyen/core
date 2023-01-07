@@ -1,5 +1,6 @@
 {
   "domain": "tuya",
+  "version": "2023.1.7",
   "name": "Tuya",
   "documentation": "https://www.home-assistant.io/integrations/tuya",
   "requirements": ["tuya-iot-py-sdk==0.6.6"],

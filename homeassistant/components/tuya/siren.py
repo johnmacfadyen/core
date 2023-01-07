@@ -34,8 +34,9 @@ SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
     # https://developer.tuya.com/en/docs/iot/categorysgbj?id=Kaiuz37tlpbnu
     "sgbj": (
         SirenEntityDescription(
-            key=DPCode.ALARM_SWITCH,
+            key=DPCode.ALARM_STATE,
             name="Siren",
+            icon="mdi:alarm-bell",
         ),
     ),
     # Smart Camera
@@ -98,7 +99,14 @@ class TuyaSirenEntity(TuyaEntity, SirenEntity):
     @property
     def is_on(self) -> bool:
         """Return true if siren is on."""
-        return self.device.status.get(self.entity_description.key, False)
+        dpcode = self.entity_description.dpcode or self.entity_description.key
+        if dpcode not in self.device.status:
+            return False
+        
+        if isinstance(self.entity_description.on_value, list):
+            return self.device.status[dpcode] in self.entity_description.on_value
+        
+        return self.device.status[dpcode] == self.entity_description.on_value
 
     def turn_on(self, **kwargs: Any) -> None:
         """Turn the siren on."""
