@@ -34,13 +34,15 @@ SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
     # https://developer.tuya.com/en/docs/iot/categorysgbj?id=Kaiuz37tlpbnu
     "sgbj": (
          SirenEntityDescription(
-            key=DPCode.ALARM_SWITCH,
-            name="Siren",
-        ),
-         SirenEntityDescription(
              key=DPCode.ALARM_STATE,
-             name="Siren"
+             name="Siren",
+             icon="mdi:alarm-bell",
          ),
+         SirenEntityDescription(
+             key=DPCode.ALERT_STATE,
+             name="Armed",
+             icon="mdi:shield-lock",
+         )
     ),
     # Smart Camera
     # https://developer.tuya.com/en/docs/iot/categorysp?id=Kaiuz35leyo12
@@ -101,24 +103,14 @@ class TuyaSirenEntity(TuyaEntity, SirenEntity):
     @property
     def is_on(self) -> bool:
         """Return true if siren is on."""
-        # Return value if siren is using new format.
-        if self.entity_description.key == DPCode.ALARM_STATE:
-            return self.device.status.get(self.entity_description.key, "normal")
         # Return value for old format.
-        return self.device.status.get(self.entity_description.key, False)
+        return self.device.status.get(self.entity_description.key, True)
 
     def turn_on(self, **kwargs: Any) -> None:
         """Turn the siren on."""
-        # Use new format if siren is using new format.
-        if self.entity_description.key == DPCode.ALARM_STATE:
-            self._send_command([{"code": self.entity_description.key, "value": "alarm_sound_light"}])
         # Use for old format.
-        self._send_command([{"code": self.entity_description.key, "value": True}])
+        self._send_command([{"code": self.entity_description.key, "value": "alarm_sound"}])
 
     def turn_off(self, **kwargs: Any) -> None:
         """Turn the siren off."""
-        # Use new format if siren is using new format.
-        if self.entity_description.key == DPCode.ALARM_STATE:
-            self._send_command([{"code": self.entity_description.key, "value": "normal"}])
-        # Use for old format
-        self._send_command([{"code": self.entity_description.key, "value": False}])
+        self._send_command([{"code": self.entity_description.key, "value": "normal"}])
