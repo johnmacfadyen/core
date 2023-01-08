@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from tuya_iot import TuyaDevice, TuyaDeviceManager
 from tuya_iot.device import TuyaDeviceStatusRange
 
+from homeassistant.backports.enum import StrEnum
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -44,6 +45,22 @@ class TuyaSensorEntityDescription(SensorEntityDescription):
 
     subkey: str | None = None
 
+class BatteryStatus(StrEnum):
+    """Battery status type data."""
+    
+    HIGH = "0x00"
+    MIDDLE = "0x01"
+    LOW = "0x02"
+    UNKNOWN = "0x03" # Need to confirm what this is
+    USB = "0x04"
+    
+STATUS_MAPPING: dict[str, str] = {
+    BatteryStatus.HIGH: "High",
+    BatteryStatus.MIDDLE: "Middle",
+    BatteryStatus.LOW: "Low",
+    BatteryStatus.UNKNOWN: "Unknown",
+    BatteryStatus.USB: "USB Power",
+}
 
 # Commonly used battery sensors, that are re-used in the sensors down below.
 BATTERY_SENSORS: tuple[TuyaSensorEntityDescription, ...] = (
@@ -416,7 +433,15 @@ SENSORS: dict[str, tuple[TuyaSensorEntityDescription, ...]] = {
     ),
     # Door and Window Controller
     # https://developer.tuya.com/en/docs/iot/s?id=K9gf48r5zjsy9
-    "mc": BATTERY_SENSORS,
+    "mc": (
+        TuyaSensorEntityDescription(
+            key=DPCode.BATTERY_STATUS,
+            name="Battery status",
+            icon="mdi:battery",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+        *BATTERY_SENSORS,
+    ),
     # Door Window Sensor
     # https://developer.tuya.com/en/docs/iot/s?id=K9gf48hm02l8m
     "mcs": BATTERY_SENSORS,
@@ -1141,6 +1166,10 @@ class TuyaSensorEntity(TuyaEntity, SensorEntity):
                 return None
             values = ElectricityTypeData.from_raw(value)
             return getattr(values, self.entity_description.subkey)
+        
+        if self.entity_description.key == DPCode.BATTERY_STATUS:
+            # map battery status to string
+            return STATUS_MAPPING.get(value)
 
         # Valid string or enum value
         return value

@@ -33,11 +33,14 @@ SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
     # Siren Alarm
     # https://developer.tuya.com/en/docs/iot/categorysgbj?id=Kaiuz37tlpbnu
     "sgbj": (
-        SirenEntityDescription(
-            key=DPCode.ALARM_STATE,
+         SirenEntityDescription(
+            key=DPCode.ALARM_SWITCH,
             name="Siren",
-            icon="mdi:alarm-bell",
         ),
+         SirenEntityDescription(
+             key=DPCode.ALARM_STATE,
+             name="Siren"
+         ),
     ),
     # Smart Camera
     # https://developer.tuya.com/en/docs/iot/categorysp?id=Kaiuz35leyo12
@@ -48,7 +51,6 @@ SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
         ),
     ),
 }
-
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
@@ -99,19 +101,24 @@ class TuyaSirenEntity(TuyaEntity, SirenEntity):
     @property
     def is_on(self) -> bool:
         """Return true if siren is on."""
-        dpcode = self.entity_description.dpcode or self.entity_description.key
-        if dpcode not in self.device.status:
-            return False
-        
-        if isinstance(self.entity_description.on_value, list):
-            return self.device.status[dpcode] in self.entity_description.on_value
-        
-        return self.device.status[dpcode] == self.entity_description.on_value
+        # Return value if siren is using new format.
+        if self.entity_description.key == DPCode.ALARM_STATE:
+            return self.device.status.get(self.entity_description.key, "normal")
+        # Return value for old format.
+        return self.device.status.get(self.entity_description.key, False)
 
     def turn_on(self, **kwargs: Any) -> None:
         """Turn the siren on."""
+        # Use new format if siren is using new format.
+        if self.entity_description.key == DPCode.ALARM_STATE:
+            self._send_command([{"code": self.entity_description.key, "value": "alarm_sound_light"}])
+        # Use for old format.
         self._send_command([{"code": self.entity_description.key, "value": True}])
 
     def turn_off(self, **kwargs: Any) -> None:
         """Turn the siren off."""
+        # Use new format if siren is using new format.
+        if self.entity_description.key == DPCode.ALARM_STATE:
+            self._send_command([{"code": self.entity_description.key, "value": "normal"}])
+        # Use for old format
         self._send_command([{"code": self.entity_description.key, "value": False}])

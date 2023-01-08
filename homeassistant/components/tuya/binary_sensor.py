@@ -191,6 +191,7 @@ BINARY_SENSORS: dict[str, tuple[TuyaBinarySensorEntityDescription, ...]] = {
             device_class=BinarySensorDeviceClass.DOOR,
             on_value={"open", "opened"},
         ),
+        TAMPER_BINARY_SENSOR,
     ),
     # Door Window Sensor
     # https://developer.tuya.com/en/docs/iot/s?id=K9gf48hm02l8m
