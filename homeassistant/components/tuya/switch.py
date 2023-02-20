@@ -303,6 +303,12 @@ SWITCHES: dict[str, tuple[SwitchEntityDescription, ...]] = {
             icon="mdi:account-lock",
             entity_category=EntityCategory.CONFIG,
         ),
+        SwitchEntityDescription(
+            key=DPCode.SLEEP,
+            name="Sleep Mode", 
+            icon="mdi:weather-night",
+            entity_category=EntityCategory.CONFIG,
+        ),
     ),
     # Sous Vide Cooker
     # https://developer.tuya.com/en/docs/iot/categorymzj?id=Kaiuz2vy130ux

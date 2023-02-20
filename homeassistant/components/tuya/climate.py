@@ -30,8 +30,12 @@ from .const import DOMAIN, TUYA_DISCOVERY_NEW, DPCode, DPType
 TUYA_HVAC_TO_HA = {
     "auto": HVACMode.HEAT_COOL,
     "cold": HVACMode.COOL,
+    "Cool": HVACMode.COOL,
+    "Dyr": HVACMode.DRY,
+    "Fan": HVACMode.FAN_ONLY,
     "freeze": HVACMode.COOL,
     "heat": HVACMode.HEAT,
+    "Heat": HVACMode.HEAT,
     "hot": HVACMode.HEAT,
     "manual": HVACMode.HEAT_COOL,
     "wet": HVACMode.DRY,
@@ -257,6 +261,7 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
         if self.find_dpcode(
             (
                 DPCode.SHAKE,
+                DPCode.WINDSHAKE,
                 DPCode.SWING,
                 DPCode.SWITCH_HORIZONTAL,
                 DPCode.SWITCH_VERTICAL,
@@ -265,7 +270,7 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
         ):
             self._attr_supported_features |= ClimateEntityFeature.SWING_MODE
             self._attr_swing_modes = [SWING_OFF]
-            if self.find_dpcode((DPCode.SHAKE, DPCode.SWING), prefer_function=True):
+            if self.find_dpcode((DPCode.SHAKE, DPCode.SWING, DPCode.WINDSHAKE), prefer_function=True):
                 self._attr_swing_modes.append(SWING_ON)
 
             if self.find_dpcode(DPCode.SWITCH_HORIZONTAL, prefer_function=True):
@@ -320,6 +325,10 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
             [
                 {
                     "code": DPCode.SHAKE,
+                    "value": swing_mode == SWING_ON,
+                },
+                {
+                    "code": DPCode.WINDSHAKE,
                     "value": swing_mode == SWING_ON,
                 },
                 {
@@ -456,7 +465,7 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
     def swing_mode(self) -> str:
         """Return swing mode."""
         if any(
-            self.device.status.get(dpcode) for dpcode in (DPCode.SHAKE, DPCode.SWING)
+            self.device.status.get(dpcode) for dpcode in (DPCode.SHAKE, DPCode.SWING, DPCode.WINDSHAKE)
         ):
             return SWING_ON
 

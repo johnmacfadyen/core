@@ -19,6 +19,33 @@
     },
     "entity": {
         "select": {
+            "alarm_ringtone": {
+                "state": {
+                    "1": "Alarm 1",
+                    "2": "Alarm 2",
+                    "3": "Alarm 3",
+                    "4": "Alarm 4",
+                    "5": "Alarm 5",
+                    "6": "Alarm 6",
+                    "7": "Alarm 7",
+                    "8": "Doorbell",
+                    "9": "Chime 1",
+                    "10": "Chime 2",
+                    "11": "Chime 3",
+                    "12": "Chime 4",
+                    "13": "Chime 5",
+                    "14": "Chime 6",
+                    "15": "Chime 7",
+                    "16": "Chime 8"
+                }
+            },
+            "alarm_volume": {
+                "state": {
+                    "low": "Low",
+                    "middle": "Middle",
+                    "high": "High"
+                }
+            },
             "basic_anti_flicker": {
                 "state": {
                     "0": "Disabled",
@@ -127,6 +154,13 @@
                     "relay": "Indicate switch on/off state"
                 }
             },
+            "master_mode": {
+                "state": {
+                    "SOUND": "Sound",
+                    "LINGHT": "Light",
+                    "Sound_Light": "Sound and Light"
+                }
+            },
             "motion_sensitivity": {
                 "state": {
                     "0": "Low sensitivity",
@@ -209,6 +243,15 @@
                     "reserve_3": "Reserve 3",
                     "standby": "Standby",
                     "warm": "Heat preservation"
+                }
+            },
+            "battery_status": {
+                "state": {
+                    "0x00": "High",
+                    "0x01": "Middle",
+                    "0x02": "Low",
+                    "0x03": "Unknown - TBD",
+                    "0x04": "USB Power"
                 }
             }
         }

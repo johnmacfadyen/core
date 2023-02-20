@@ -172,6 +172,8 @@ NUMBERS: dict[str, tuple[NumberEntityDescription, ...]] = {
             key=DPCode.ALARM_TIME,
             name="Time",
             entity_category=EntityCategory.CONFIG,
+            icon="mdi:timer-music-outline",
+            unit_of_measurement=UnitOfTime.MINUTES,
         ),
     ),
     # Smart Camera

@@ -390,6 +390,14 @@ SENSORS: dict[str, tuple[TuyaSensorEntityDescription, ...]] = {
             entity_registry_enabled_default=False,
         ),
     ),
+    "kt": (
+        TuyaSensorEntityDescription(
+            key=DPCode.TEMP_CURRENT,
+            name="Temperature",
+            device_class=SensorDeviceClass.TEMPERATURE,
+            state_class=SensorStateClass.MEASUREMENT,
+        ),
+    ),
     # IoT Switch
     # Note: Undocumented
     "tdq": (
@@ -457,6 +465,7 @@ SENSORS: dict[str, tuple[TuyaSensorEntityDescription, ...]] = {
             name="Battery status",
             icon="mdi:battery",
             entity_category=EntityCategory.DIAGNOSTIC,
+            translation_key="battery_status",
         ),
         *BATTERY_SENSORS,
     ),
@@ -486,7 +495,16 @@ SENSORS: dict[str, tuple[TuyaSensorEntityDescription, ...]] = {
     ),
     # PIR Detector
     # https://developer.tuya.com/en/docs/iot/categorypir?id=Kaiuz3ss11b80
-    "pir": BATTERY_SENSORS,
+    "pir": (
+        TuyaSensorEntityDescription(
+            key=DPCode.BATTERY_STATUS,
+            name="Battery status",
+            icon="mdi:battery",
+            entity_category=EntityCategory.DIAGNOSTIC,
+            translation_key="battery_status",
+        ),
+        *BATTERY_SENSORS,
+    ),
     # PM2.5 Sensor
     # https://developer.tuya.com/en/docs/iot/categorypm25?id=Kaiuz3qof3yfu
     "pm2.5": (
@@ -1185,9 +1203,5 @@ class TuyaSensorEntity(TuyaEntity, SensorEntity):
             values = ElectricityTypeData.from_raw(value)
             return getattr(values, self.entity_description.subkey)
         
-        if self.entity_description.key == DPCode.BATTERY_STATUS:
-            # map battery status to string
-            return STATUS_MAPPING.get(value)
-
         # Valid string or enum value
         return value

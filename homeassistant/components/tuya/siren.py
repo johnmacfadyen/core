@@ -5,6 +5,7 @@ from typing import Any
 
 from tuya_iot import TuyaDevice, TuyaDeviceManager
 
+from homeassistant.backports.enum import StrEnum
 from homeassistant.components.siren import (
     SirenEntity,
     SirenEntityDescription,
@@ -13,12 +14,13 @@ from homeassistant.components.siren import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HomeAssistantTuyaData
-from .base import TuyaEntity
-from .const import DOMAIN, TUYA_DISCOVERY_NEW, DPCode
-
+from .base import TuyaEntity, EnumTypeData
+from .const import DOMAIN, TUYA_DISCOVERY_NEW, DPCode, DPType
+   
 # All descriptions can be found here:
 # https://developer.tuya.com/en/docs/iot/standarddescription?id=K9i5ql6waswzq
 SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
@@ -33,16 +35,17 @@ SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
     # Siren Alarm
     # https://developer.tuya.com/en/docs/iot/categorysgbj?id=Kaiuz37tlpbnu
     "sgbj": (
-         SirenEntityDescription(
-             key=DPCode.ALARM_STATE,
-             name="Siren",
-             icon="mdi:alarm-bell",
-         ),
-         SirenEntityDescription(
-             key=DPCode.ALERT_STATE,
-             name="Armed",
-             icon="mdi:shield-lock",
-         )
+        SirenEntityDescription(
+            key=DPCode.ALARM_STATE,
+            name="Siren",
+            icon="mdi:alarm-bell",
+        ),
+        # Alert State (0: off, 1: on) - Siren won't trigger if this is off
+        SirenEntityDescription(
+            key=DPCode.ALERT_STATE,
+            name="Armed",
+            icon="mdi:shield-lock",
+        ),
     ),
     # Smart Camera
     # https://developer.tuya.com/en/docs/iot/categorysp?id=Kaiuz35leyo12
@@ -53,6 +56,7 @@ SIRENS: dict[str, tuple[SirenEntityDescription, ...]] = {
         ),
     ),
 }
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
@@ -87,7 +91,7 @@ async def async_setup_entry(
 class TuyaSirenEntity(TuyaEntity, SirenEntity):
     """Tuya Siren Entity."""
 
-    _attr_supported_features = SirenEntityFeature.TURN_ON | SirenEntityFeature.TURN_OFF
+    _attr_supported_features = SirenEntityFeature.TURN_ON | SirenEntityFeature.TURN_OFF | SirenEntityFeature.VOLUME_SET | SirenEntityFeature.DURATION
 
     def __init__(
         self,
@@ -103,14 +107,35 @@ class TuyaSirenEntity(TuyaEntity, SirenEntity):
     @property
     def is_on(self) -> bool:
         """Return true if siren is on."""
-        # Return value for old format.
-        return self.device.status.get(self.entity_description.key, True)
-
+        if self.entity_description.key is DPCode.ALERT_STATE:
+            return self.device.status.get(self.entity_description.key, False)
+        
+        if self.entity_description.key is DPCode.ALARM_STATE:
+            sirenOn = self.device.status.get(self.entity_description.key)
+            if sirenOn == "normal":
+                return False
+            if sirenOn == "alarm_sound": 
+                return True
+                    
+        if self.entity_description.key is DPCode.ALARM_SWITCH:
+            return self.device.status.get(self.entity_description.key, False)
+    
+        
     def turn_on(self, **kwargs: Any) -> None:
         """Turn the siren on."""
-        # Use for old format.
-        self._send_command([{"code": self.entity_description.key, "value": "alarm_sound"}])
+        
+        if self.entity_description.key is DPCode.ALARM_STATE: 
+            self._send_command([{"code": self.entity_description.key, "value": "alarm_sound"}])        
+        else:
+            self._send_command([{"code": self.entity_description.key, "value": True}])
 
     def turn_off(self, **kwargs: Any) -> None:
         """Turn the siren off."""
-        self._send_command([{"code": self.entity_description.key, "value": "normal"}])
+        
+        if self.entity_description.key is DPCode.ALARM_STATE: 
+            self._send_command([{"code": self.entity_description.key, "value": "normal"}])
+        else:
+            self._send_command([{"code": self.entity_description.key, "value": False}])
+        
+        
+        

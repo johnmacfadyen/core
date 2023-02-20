@@ -84,12 +84,28 @@ SELECTS: dict[str, tuple[SelectEntityDescription, ...]] = {
             key=DPCode.ALARM_VOLUME,
             name="Volume",
             entity_category=EntityCategory.CONFIG,
+            translation_key="alarm_volume",
+            icon="mdi:volume-high",
         ),
         SelectEntityDescription(
             key=DPCode.BRIGHT_STATE,
             name="Brightness",
             entity_category=EntityCategory.CONFIG,
         ),
+        SelectEntityDescription(
+            key=DPCode.ALARM_RINGTONE,
+            name="Ringtone",
+            entity_category=EntityCategory.CONFIG,
+            translation_key="alarm_ringtone",
+            icon="mdi:music-note",
+        ), 
+        SelectEntityDescription(
+            key=DPCode.MASTER_MODE,
+            name="Alarm Mode",
+            entity_category=EntityCategory.CONFIG,
+            translation_key="master_mode",
+            icon="mdi:alarm-light",
+        )
     ),
     # Smart Camera
     # https://developer.tuya.com/en/docs/iot/categorysp?id=Kaiuz35leyo12

@@ -16,6 +16,15 @@
             "reserve_3": "Reserve 3",
             "standby": "Standby",
             "warm": "Heat preservation"
+        },
+        "tuya__battery_status": {
+            "state": {
+                "0x00": "High",
+                "0x01": "Middle",
+                "0x02": "Low",
+                "0x03": "Unknown - TBD",
+                "0x04": "USB Power"
+            }
         }
     }
 }

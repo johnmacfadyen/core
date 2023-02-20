@@ -106,6 +106,7 @@ class DPCode(StrEnum):
     ALARM_TIME = "alarm_time"  # Alarm time
     ALARM_VOLUME = "alarm_volume"  # Alarm volume
     ALARM_MESSAGE = "alarm_message"
+    ALARM_RINGTONE = "alarm_ringtone"
     ANGLE_HORIZONTAL = "angle_horizontal"
     ANGLE_VERTICAL = "angle_vertical"
     ANION = "anion"  # Ionizer unit
@@ -249,6 +250,7 @@ class DPCode(StrEnum):
     PHASE_B = "phase_b"
     PHASE_C = "phase_c"
     PIR = "pir"  # Motion sensor
+    PIR2 = "PIR"
     PM1 = "pm1"
     PM10 = "pm10"
     PM25 = "pm25"
@@ -365,6 +367,7 @@ class DPCode(StrEnum):
     WET = "wet"  # Humidification
     WINDOW_CHECK = "window_check"
     WINDOW_STATE = "window_state"
+    WINDSHAKE = "windshake"
     WINDSPEED = "windspeed"
     WIRELESS_BATTERYLOCK = "wireless_batterylock"
     WIRELESS_ELECTRICITY = "wireless_electricity"

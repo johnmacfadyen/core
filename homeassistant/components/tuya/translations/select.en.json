@@ -1,5 +1,32 @@
 {
     "state": {
+        "tuya__alarm_ringtone": {
+            "state": {
+                "1": "Alarm 1",
+                "2": "Alarm 2",
+                "3": "Alarm 3",
+                "4": "Alarm 4",
+                "5": "Alarm 5",
+                "6": "Alarm 6",
+                "7": "Alarm 7",
+                "8": "Doorbell",
+                "9": "Chime 1",
+                "10": "Chime 2",
+                "11": "Chime 3",
+                "12": "Chime 4",
+                "13": "Chime 5",
+                "14": "Chime 6",
+                "15": "Chime 7",
+                "16": "Chime 8"
+            }
+        },
+        "tuya__alarm_volume": {
+            "state": {
+                "low": "Low",
+                "middle": "Middle",
+                "high": "High"
+            }
+        },
         "tuya__basic_anti_flickr": {
             "0": "Disabled",
             "1": "50 Hz",
